@@ -1,0 +1,18 @@
+<%- include('./partials/head') %>
+
+    <body>
+        <h1>Random number generated is <%= randomNumber %>
+        </h1>
+        <p>
+            <% if (randomNumber % 2===0) { %>
+                <h2>You got an even number!</h2>
+                <% } else { %>
+                    <h2>You got an odd number!</h2>
+                    <% } %>
+        </p>
+        <p>
+            <%= randomNumber%2===0 ? "EVEN" : "ODD" %>
+        </p>
+    </body>
+
+    </html>
