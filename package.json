@@ -1,0 +1,27 @@
+{
+  "name": "firstexpressapp",
+  "version": "1.0.0",
+  "description": "This is app I created to learn express framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NishantSrinivas/firstExpressApp.git"
+  },
+  "keywords": [
+    "Node",
+    "Express",
+    "WebDevelopment"
+  ],
+  "author": "Nishant Srinivas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NishantSrinivas/firstExpressApp/issues"
+  },
+  "homepage": "https://github.com/NishantSrinivas/firstExpressApp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
