@@ -1,8 +1,9 @@
+const axios = require('axios');
 const express = require('express');
 const path = require('path');
-const partials = require
 const app = express();
 const APP_PORT = 8080;
+const BASE_URL = "https://icanhazdadjoke.com";
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
@@ -26,6 +27,14 @@ app.get("/greet", (request, response) => {
     console.log(request.query)
     const { username } = request.query;
     response.render("greet", { username, title: "Express greet" });
+})
+
+app.get("/getajoke", async (request, response) => {
+    const reqConfig = { 'headers': { 'Accept': 'application/json', "User-Agent": "axios 0.21.1" } }
+    const result = await axios.get(BASE_URL, reqConfig);
+    // console.log(result);
+    response.send(result.data);
+    // result.json(result.data)
 })
 
 app.get("/randomnumber", (request, response) => {
