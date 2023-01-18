@@ -1,0 +1,18 @@
+<%- include('./partials/head') %>
+
+    <body>
+        <h1>This is a twitter clone app!!</h1>
+        <h2>These are some fake tweets for you ;)</h2>
+        <ul>
+            <% for(const tweet of tweets) { %>
+                <li>
+                    <%= tweet.content %> : <em>
+                            <%= tweet.author %>
+                        </em>
+                        <a href="/tweets/<%= tweet.id %> ">view</a>
+                </li>
+                <% } %>
+        </ul>
+        <a href="/tweets/new">Create a new tweet!</a>
+    </body>
+    <%- include('./partials/footer') %>
