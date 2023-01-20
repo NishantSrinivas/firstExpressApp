@@ -1,0 +1,21 @@
+<%- include('./partials/head') %>
+
+    <body>
+        <h1>Edit your tweet!!</h1>
+        <form action="http://localhost:8080/tweets/<%= id %>?_method=PATCH" method="POST">
+            <b>Author</b> : <em>
+                <%= author %>
+            </em>
+            <br>
+            <label for="tweet">Tweet: </label>
+            <br>
+            <textarea id="tweet" name="tweet" cols="40">
+                <%= content %>
+            </textarea>
+            <br>
+            <button>Edit Tweet</button>
+        </form>
+        <a href="/tweets">See old tweets</a>
+        <!-- <script src="/app.js"></script> -->
+    </body>
+    <% - include('./partials/footer') %>

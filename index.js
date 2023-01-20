@@ -1,6 +1,7 @@
 // const axios = require('axios');
 const express = require('express');
 const path = require('path');
+const methodOverride = require('method-override');
 const { v4: uuidv4 } = require('uuid');
 const app = express();
 const APP_PORT = 8080;
@@ -8,6 +9,7 @@ const APP_PORT = 8080;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
@@ -46,8 +48,27 @@ app.get("/tweets/new", (req, res) => {
 app.post("/tweets", (req, res) => {
     const { author, tweet } = req.body;
     tweets.push({ author: author, content: tweet, id: uuidv4() });
-    console.log("Tweet Created!!");
     res.redirect("/tweets");
+})
+
+app.patch("/tweets/:id", (req, res) => {
+    const { tweet: newTweet } = req.body;
+    let tweetToBeUpdated = tweets.filter(({ id }) => id === req.params.id);
+    if (tweetToBeUpdated.length !== 0) {
+        tweetToBeUpdated[0].content = newTweet;
+    }
+    res.redirect("/tweets");
+})
+
+app.delete("/tweets/:id", (req, res) => {
+    let newtweets = tweets.filter(({ id }) => id !== req.params.id);
+    tweets = newtweets;
+    res.redirect("/tweets");
+})
+
+app.get("/tweets/edit/:id", (req, res) => {
+    const tweet = tweets.filter(({ id }) => id === req.params.id);
+    res.render("edittweet", { author: tweet[0].author, content: tweet[0].content, id: tweet[0].id, title: "Edit tweet" });
 })
 
 app.get("/tweets/:id", (req, res) => {
