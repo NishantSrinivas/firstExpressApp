@@ -6,6 +6,21 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const APP_PORT = 8080;
 // const BASE_URL = "https://icanhazdadjoke.com";
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', false);
+mongoose.connect('mongodb://127.0.0.1:27017/tweetClone').then(() => {
+    console.log("Connection establised with database");
+}).catch(err => {
+    console.log(`Failed to establish connection with database ${err}`)
+})
+
+const tweetSchema = new mongoose.Schema({
+    _id: String,
+    author: String,
+    content: String
+});
+
+const Tweet = mongoose.model("Tweet", tweetSchema);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -14,31 +29,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
 
-let tweets = [
-    {
-        id: uuidv4(),
-        content: "This is the first fake tweet!! HURAAY",
-        author: "yeaItsMe"
-    },
-    {
-        id: uuidv4(),
-        content: "Oh yea this is so COOL",
-        author: "fakeUSER123"
-    },
-    {
-        id: uuidv4(),
-        content: "Colt and his cats, so hilarious",
-        author: "randomUser"
-    },
-    {
-        id: uuidv4(),
-        content: "Web Dev is FUNNNNNN",
-        author: "yeaItsMe"
-    },
-]
-
 app.get("/tweets", (req, res) => {
-    res.render("tweet", { tweets, title: "Twitter Clone" });
+    Tweet.find({})
+        .then(data => res.render("tweet", { tweets: data, title: "Twitter Clone" }));
 })
 
 app.get("/tweets/new", (req, res) => {
@@ -46,34 +39,33 @@ app.get("/tweets/new", (req, res) => {
 })
 
 app.post("/tweets", (req, res) => {
-    const { author, tweet } = req.body;
-    tweets.push({ author: author, content: tweet, id: uuidv4() });
-    res.redirect("/tweets");
+    const { author, content } = req.body;
+    const newTweet = new Tweet({ "_id": uuidv4(), "author": author, "content": content });
+    newTweet.save()
+        .then(() => {
+            res.redirect("/tweets");
+        })
+        .catch((err) => {
+            console.log(`Tweet could not be saved to database: {err}`);
+            res.redirect("errorpage");
+        })
 })
 
 app.patch("/tweets/:id", (req, res) => {
     const { tweet: newTweet } = req.body;
-    let tweetToBeUpdated = tweets.filter(({ id }) => id === req.params.id);
-    if (tweetToBeUpdated.length !== 0) {
-        tweetToBeUpdated[0].content = newTweet;
-    }
-    res.redirect("/tweets");
+    Tweet.updateOne({ "_id": req.params.id }, { "content": newTweet }).then(() => res.redirect("/tweets"))
 })
 
 app.delete("/tweets/:id", (req, res) => {
-    let newtweets = tweets.filter(({ id }) => id !== req.params.id);
-    tweets = newtweets;
-    res.redirect("/tweets");
+    Tweet.findByIdAndDelete(req.params.id).then(() => res.redirect("/tweets"));
 })
 
 app.get("/tweets/edit/:id", (req, res) => {
-    const tweet = tweets.filter(({ id }) => id === req.params.id);
-    res.render("edittweet", { author: tweet[0].author, content: tweet[0].content, id: tweet[0].id, title: "Edit tweet" });
+    Tweet.findById(req.params.id).then(data => res.render("edittweet", { author: data.author, content: data.content, id: data.id, title: "Edit data" }));
 })
 
 app.get("/tweets/:id", (req, res) => {
-    const tweet = tweets.filter(({ id }) => id === req.params.id);
-    res.render("showtweet", { author: tweet[0].author, content: tweet[0].content, title: "Twitter Clone" });
+    Tweet.findById(req.params.id).then(data => res.render("showtweet", { author: data.author, content: data.content, title: "Twitter Clone" }));
 })
 
 // JUST SOME RANDOM PRACTICE CODE. 
